@@ -5,7 +5,7 @@ from torch.utils.data import DataLoader
 import torch.nn as nn
 import torch.optim as optim
 from tqdm import tqdm
-import os, csv
+import os, csv, json
 
 from models.vilt import MiniViLT
 from models.embedding import SimpleTokenizer
@@ -20,31 +20,8 @@ BATCH_SIZE = 8
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
 # vocab
-vocab = {
-    "[PAD]": 0,
-    "[UNK]": 1,
-    "a": 2,
-    "child": 3,
-    "in": 4,
-    "pink": 5,
-    "dress": 6,
-    "is": 7,
-    "climbing": 8,
-    "up": 9,
-    "stairs": 10,
-    "entry": 11,
-    "way": 12,
-    "girl": 13,
-    "wooden": 14,
-    "playhouse": 15,
-    "going": 16,
-    "into": 17,
-    "dog": 18,
-    "and": 19,
-    "black": 20,
-    "white": 21,
-    "little": 22,
-}
+with open("data/vocab.json") as f:
+    vocab = json.load(f)
 tokenizer = SimpleTokenizer(vocab)
 
 # load data
