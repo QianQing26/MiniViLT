@@ -18,7 +18,7 @@ class ITMDataset(Dataset):
 
     def __getitem__(self, idx):
         if random.random() < self.negative_ratio:
-            # ❌ Negative sample
+            # Negative sample
             img_idx = idx
             txt_idx = random.randint(0, len(self.data) - 1)
             while txt_idx == img_idx:
@@ -28,7 +28,7 @@ class ITMDataset(Dataset):
             text = random.choice(other["captions"])
             label = 0
         else:
-            # ✅ Positive sample
+            # Positive sample
             item = self.data[idx]
             text = random.choice(item["captions"])
             label = 1
