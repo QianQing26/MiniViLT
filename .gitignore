@@ -1,2 +1,4 @@
 data/prepare_flickr8k.py
 data/flickr8k/images/
+.vscode/settings.json
+models/__pycache__/embedding.cpython-311.pyc
