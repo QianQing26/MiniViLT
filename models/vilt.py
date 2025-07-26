@@ -1,5 +1,4 @@
 # models/vilt.py
-
 import torch
 import torch.nn as nn
 from models.embedding import MultiModalEmbedder, SimpleTokenizer
@@ -7,7 +6,7 @@ from models.transformer import TransformerEncoder
 
 
 class MiniViLT(nn.Module):
-    def __init__(self, vocab_size, embed_dim=256, depth=6, n_heads=4, max_text_len=32):
+    def __init__(self, vocab_size, embed_dim=512, depth=4, n_heads=4, max_text_len=32):
         super().__init__()
         self.embedder = MultiModalEmbedder(
             vocab_size=vocab_size, embed_dim=embed_dim, max_text_len=max_text_len

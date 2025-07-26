@@ -15,7 +15,7 @@ from data.itm_dataset import ITMDataset
 DATA_JSON = "data/flickr8k/flickr8k_data.json"
 CHECKPOINT_DIR = "checkpoints"
 LOG_FILE = "logs/training_log.csv"
-EPOCHS = 10
+EPOCHS = 200
 BATCH_SIZE = 8
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
@@ -26,12 +26,14 @@ tokenizer = SimpleTokenizer(vocab)
 
 # load data
 dataset = ITMDataset(DATA_JSON, tokenizer)
-loader = DataLoader(dataset, batch_size=BATCH_SIZE, shuffle=True)
+tiny = torch.utils.data.Subset(dataset, indices=range(32))
+# loader = DataLoader(dataset, batch_size=BATCH_SIZE, shuffle=True)
+loader = DataLoader(tiny, batch_size=BATCH_SIZE, shuffle=True)
 
 # model
 model = MiniViLT(vocab_size=len(vocab)).to(DEVICE)
 criterion = nn.CrossEntropyLoss()
-optimizer = optim.Adam(model.parameters(), lr=1e-4)
+optimizer = optim.Adam(model.parameters(), lr=3e-4)
 
 # logs
 os.makedirs(CHECKPOINT_DIR, exist_ok=True)
@@ -50,15 +52,15 @@ for epoch in range(1, EPOCHS + 1):
     total_loss, total_correct = 0, 0
 
     for imgs, token_ids_batch, labels in tqdm(loader, desc=f"Epoch {epoch}"):
-        imgs = [img.to(DEVICE) for img in imgs]
-        token_ids_batch = torch.stack(token_ids_batch).to(DEVICE)
-        labels = torch.tensor(labels).to(DEVICE)
+        # imgs = [img.to(DEVICE) for img in imgs]
+        imgs = imgs.to(DEVICE)
+        # token_ids_batch = torch.stack(token_ids_batch).to(DEVICE)
+        token_ids_batch = token_ids_batch.to(DEVICE)
+        # labels = torch.tensor(labels).to(DEVICE)
+        labels = labels.clone().detach().to(DEVICE)
 
         # 前向
-        logits = torch.cat(
-            [model(img, ids.unsqueeze(0)) for img, ids in zip(imgs, token_ids_batch)],
-            dim=0,
-        )
+        logits = model(imgs, token_ids_batch)
 
         loss = criterion(logits, labels)
         total_loss += loss.item() * len(labels)
